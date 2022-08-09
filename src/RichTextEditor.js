@@ -229,6 +229,11 @@ export default class RichTextEditor extends Component {
         }
         case messages.ADD_RECIPIENT:{
           this.props.addRecipient && this.props.addRecipient();
+          break;
+        }
+        case messages.CANCEL_SCHEDULE_SEND:{
+          this.props.cancelScheduleSend && this.props.cancelScheduleSend();
+          break;
         }
       }
     } catch(e) {
@@ -585,6 +590,10 @@ export default class RichTextEditor extends Component {
 
   setInputFieldText(fieldKey, text) {
     this._sendAction(actions.setInputFieldText, {key: fieldKey, text});
+  }
+
+  deleteScheduleSend() {
+    this._sendAction(actions.deleteScheduleSend);
   }
 
   focusInputField(fieldKey) {

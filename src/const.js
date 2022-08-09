@@ -10,6 +10,7 @@ export const actions = {
   getContentHtml: 'GET_CONTENT_HTML',
   getInputFieldText: 'GET_INPUT_FIELD_TEXT',
   setInputFieldText: 'SET_INPUT_FIELD_TEXT',
+  deleteScheduleSend: 'DELETE_SCHEDULE_SEND',
   focusInputField: 'FOCUS_INPUT_FIELD',
   blurInputField: 'BLUR_INPUT_FIELD',
   getSelectedText: 'GET_SELECTED_TEXT',
@@ -63,6 +64,7 @@ export const actions = {
 
 export const messages = {
   ADD_RECIPIENT: 'ADD_RECIPIENT',
+  CANCEL_SCHEDULE_SEND: 'CANCEL_SCHEDULE_SEND',
   TITLE_HTML_RESPONSE: 'TITLE_HTML_RESPONSE',
   TITLE_TEXT_RESPONSE: 'TITLE_TEXT_RESPONSE',
   CONTENT_HTML_RESPONSE: 'CONTENT_HTML_RESPONSE',
