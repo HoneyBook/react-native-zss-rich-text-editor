@@ -1054,8 +1054,13 @@
 			WebViewBridge.send(JSON.stringify({type: 'ADD_RECIPIENT'}))
 		}
 
-		zss_editor.cancelScheduledSend=function (){
+		zss_editor.cancelScheduledSend=function (event){
+			event.stopPropagation();
 			WebViewBridge.send(JSON.stringify({type: 'CANCEL_SCHEDULE_SEND'}))
+		}
+
+		zss_editor.openScheduledSendMenu=function (){
+			WebViewBridge.send(JSON.stringify({type: 'OPEN_SCHEDULE_MENU'}))
 		}
 
 		zss_editor.insertInputField = function(data) {
@@ -1081,7 +1086,7 @@
 			inputElStr += '>';
 			if (key === "schedule_send_field") {
 				if (scheduleDate) {
-					let scheduleLi = $('<li class="zss_editor_field_li schedule_wrapper"> ' +
+					let scheduleLi = $('<li class="zss_editor_field_li schedule_wrapper" onclick="zss_editor.openScheduledSendMenu()"> ' +
 							'<div class="schedule_date_wrapper">' +
 							'<img class="clock_icon"' +
 							' src="https://res.cloudinary.com/honeybook/image/upload/v1658929714/system_web/svg_icons/clock-forward-16.svg" alt="clock"/>' +
@@ -1089,10 +1094,10 @@
 							'<span class="scheduled_date">' + scheduleDate +  '</span>' +
 							'</div>' +
 							'<div class="trash_wrapper">' +
-							'<img src="https://res.cloudinary.com/honeybook/image/upload/v1659966072/system_web/svg_icons/trash-24.svg" class="trash_icon" onclick="zss_editor.cancelScheduledSend()" />' +
+							'<img src="https://res.cloudinary.com/honeybook/image/upload/v1659966072/system_web/svg_icons/trash-24.svg" class="trash_icon" onclick="zss_editor.cancelScheduledSend(event)" />' +
 							'</div>' +
 							+ '</li>');
-					ul.append(scheduleLi);
+					ul.prepend(scheduleLi);
 				} else {
 					return;
 				}
@@ -1687,6 +1692,13 @@
 				$(this).addClass('zs_active');
 			});
 
+			$('.trash_icon').bind('touchstart', function(e) {
+				$(this).addClass('trash_icon_active');
+			});
+			$('.trash_icon').bind('touchend', function(e) {
+				$(this).removeClass('trash_icon_active');
+			});
+
 			// Use jQuery to figure out those that are not supported
 			if (typeof(e) != "undefined") {
 				// The target element
@@ -1779,9 +1791,19 @@
 			this.removeElementByClass('schedule_wrapper');
 		}
 
+		zss_editor.setScheduleSendDate = function(data) {
+			let { scheduleDate} = data;
+			let dateSpan = $('.scheduled_date')[0];
+			if (!dateSpan){
+				// create the schedule from scratch
+				zss_editor.insertInputField(data)
+			}
+			dateSpan.innerText = scheduleDate;
+		}
+
 		zss_editor.removeElementByClass = function(className) {
-					const elementToBeRemoved = $(`.${className}`)[0];
-					elementToBeRemoved.parentNode.removeChild(elementToBeRemoved);
+			const elementToBeRemoved = $(`.${className}`)[0];
+			elementToBeRemoved.parentNode.removeChild(elementToBeRemoved);
 		}
 
 		zss_editor.blurInputField = function(key) {
@@ -1991,6 +2013,13 @@
 			filter: invert(55%) sepia(8%) saturate(393%) hue-rotate(180deg) brightness(86%) contrast(85%);
 			width: 24px;
 			height: 24px;
+			margin-right: 4px;
+			transition: 0.3s;
+		}
+
+		.trash_icon_active {
+			transition: 0.3s;
+			filter: brightness(100%);
 		}
 
 		.clock_icon {

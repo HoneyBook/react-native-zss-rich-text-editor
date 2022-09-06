@@ -235,6 +235,11 @@ export default class RichTextEditor extends Component {
           this.props.cancelScheduleSend && this.props.cancelScheduleSend();
           break;
         }
+
+        case messages.OPEN_SCHEDULE_MENU:{
+          this.props.openScheduleEmail && this.props.openScheduleEmail();
+          break;
+        }
       }
     } catch(e) {
       //alert('NON JSON MESSAGE');
@@ -571,6 +576,10 @@ export default class RichTextEditor extends Component {
         }
       }, 5000);
     });
+  }
+
+  async setScheduleSendDate(scheduleObj) {
+    this._sendAction(actions.setScheduleSendDate, scheduleObj);
   }
 
   async getInputFieldText(fieldKey) {

@@ -2,6 +2,7 @@ export const actions = {
   enableOnChange: 'ENABLE_ON_CHANGE',
   setTitleHtml: 'SET_TITLE_HTML',
   setContentHtml: 'SET_CONTENT_HTML',
+  addRecipient: 'ADD_RECIPIENT',
   getTitleHtml: 'GET_TITLE_HTML',
   getTitleText: 'GET_TITLE_TEXT',
   toggleTitle: 'TOGGLE_TITLE',
@@ -9,6 +10,7 @@ export const actions = {
   showTitle: 'SHOW_TITLE',
   getContentHtml: 'GET_CONTENT_HTML',
   getInputFieldText: 'GET_INPUT_FIELD_TEXT',
+  setScheduleSendDate: 'SET_SCHEDULE_SEND_DATE',
   setInputFieldText: 'SET_INPUT_FIELD_TEXT',
   deleteScheduleSend: 'DELETE_SCHEDULE_SEND',
   focusInputField: 'FOCUS_INPUT_FIELD',
@@ -65,6 +67,7 @@ export const actions = {
 export const messages = {
   ADD_RECIPIENT: 'ADD_RECIPIENT',
   CANCEL_SCHEDULE_SEND: 'CANCEL_SCHEDULE_SEND',
+  OPEN_SCHEDULE_MENU: 'OPEN_SCHEDULE_MENU',
   TITLE_HTML_RESPONSE: 'TITLE_HTML_RESPONSE',
   TITLE_TEXT_RESPONSE: 'TITLE_TEXT_RESPONSE',
   CONTENT_HTML_RESPONSE: 'CONTENT_HTML_RESPONSE',
