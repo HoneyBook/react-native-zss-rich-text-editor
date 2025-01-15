@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import WebViewBridge from "react-native-webview-bridge";
 import { InjectedMessageHandler } from "./WebviewMessageHandler";
 import { actions, messages } from "./const";
 import { Dimensions, Keyboard, Platform, View } from "react-native";
+import WebView from "react-native-webview";
 
 const injectScript = `
   (function () {
@@ -251,12 +251,12 @@ export default class RichTextEditor extends Component {
     const pageSource = PlatformIOS ? (this.props.source ? this.props.source:require('./editor.html')) : { uri: 'file:///android_asset/editor.html' };
     return (
         <View style={{flex: 1}}>
-          <WebViewBridge
+          <WebView
               {...this.props}
               hideKeyboardAccessoryView={true}
               keyboardDisplayRequiresUserAction={false}
               ref={(r) => {this.webviewBridge = r}}
-              onBridgeMessage={(message) => this.onBridgeMessage(message)}
+              onMessage={(message) => this.onBridgeMessage(message)}
               injectedJavaScript={injectScript}
               source={pageSource}
               onLoad={() => this.init()}
@@ -283,7 +283,7 @@ export default class RichTextEditor extends Component {
 
     let jsonString = JSON.stringify({type: action, data});
     let test = this.btoa(unescape(encodeURIComponent(jsonString)));
-    this.webviewBridge.sendToBridge(test);
+    this.webviewBridge.postMessage(test);
   }
 
   btoa(input= '') {
