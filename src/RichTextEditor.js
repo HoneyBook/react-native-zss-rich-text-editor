@@ -101,9 +101,9 @@ export default class RichTextEditor extends Component {
     // this.setEditorHeight(zibi);
   }
 
-  onBridgeMessage(str){
+  onBridgeMessage(event){
     try {
-      const message = JSON.parse(str);
+      const message = JSON.parse(event.nativeEvent.data);
 
       switch (message.type) {
         case messages.TITLE_HTML_RESPONSE:

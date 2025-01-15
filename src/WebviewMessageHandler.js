@@ -30,8 +30,8 @@ export const InjectedMessageHandler = `
         return output;
       };
 
-    const onMessage = function (message) {
-      const action = JSON.parse(decodeURIComponent(escape(hbAtob(message))));
+    const onMessage = function (messageEvent) {
+      const action = JSON.parse(decodeURIComponent(escape(hbAtob(messageEvent.data))));
 
       switch(action.type) {
         case '${actions.enableOnChange}':
@@ -225,5 +225,5 @@ export const InjectedMessageHandler = `
       }
     };
 
-    window.addEventListener("message", onMessage);
+    document.addEventListener("message", onMessage);
 `;
