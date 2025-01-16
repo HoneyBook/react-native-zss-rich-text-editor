@@ -35,6 +35,7 @@ export default class RichTextEditor extends Component {
   constructor(props) {
     super(props);
     this._sendAction = this._sendAction.bind(this);
+    this._setRef = this._setRef.bind(this);
     this.registerToolbar = this.registerToolbar.bind(this);
     this.onBridgeMessage = this.onBridgeMessage.bind(this);
     this._onKeyboardWillShow = this._onKeyboardWillShow.bind(this);
@@ -192,7 +193,7 @@ export default class RichTextEditor extends Component {
           console.log('FROM ZSS', message.data);
           break;
         case messages.SCROLL:
-          this.webviewBridge.setNativeProps({contentOffset: {y: message.data}});
+          this.webviewRef.setNativeProps({contentOffset: {y: message.data}});
           break;
         case messages.TITLE_FOCUSED:
           this.titleFocusHandler && this.titleFocusHandler();
@@ -246,6 +247,10 @@ export default class RichTextEditor extends Component {
     }
   }
 
+  _setRef(ref){
+    this.webviewRef = ref;
+  }
+
   render() {
     //in release build, external html files in Android can't be required, so they must be placed in the assets folder and accessed via uri
     const pageSource = PlatformIOS ? (this.props.source ? this.props.source:require('./editor.html')) : { uri: 'file:///android_asset/editor.html' };
@@ -255,7 +260,7 @@ export default class RichTextEditor extends Component {
               {...this.props}
               hideKeyboardAccessoryView={true}
               keyboardDisplayRequiresUserAction={false}
-              ref={(r) => {this.webviewBridge = r}}
+              ref={this._setRef}
               onMessage={(message) => this.onBridgeMessage(message)}
               injectedJavaScript={injectScript}
               source={pageSource}
@@ -283,7 +288,7 @@ export default class RichTextEditor extends Component {
 
     let jsonString = JSON.stringify({type: action, data});
     let test = this.btoa(unescape(encodeURIComponent(jsonString)));
-    this.webviewBridge.postMessage(test);
+    this.webviewRef.postMessage(test);
   }
 
   btoa(input= '') {
