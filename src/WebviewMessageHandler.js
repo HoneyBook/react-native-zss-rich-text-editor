@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import {actions, messages} from './const';
 
 export const InjectedMessageHandler = `
@@ -225,5 +226,5 @@ export const InjectedMessageHandler = `
       }
     };
 
-    document.addEventListener("message", onMessage);
+    ${Platform.OS === "ios"? 'window': 'document'}.addEventListener("message", onMessage);
 `;
