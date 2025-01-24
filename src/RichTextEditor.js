@@ -4,6 +4,7 @@ import { InjectedMessageHandler } from "./WebviewMessageHandler";
 import { actions, messages } from "./const";
 import { Dimensions, Keyboard, Platform, View } from "react-native";
 import WebView from "react-native-webview";
+import {getEditorHtml} from './editor'
 
 const injectScript = `
   (function () {
@@ -52,6 +53,7 @@ export default class RichTextEditor extends Component {
     this.inputFieldResolves = {};
     this.inputFieldRejects = {};
     this.inputFieldTimers = {};
+    this.editorHtml = getEditorHtml()
   }
 
   componentDidMount() {
@@ -251,9 +253,7 @@ export default class RichTextEditor extends Component {
     this.webviewRef = ref;
   }
 
-  render() {
-    //in release build, external html files in Android can't be required, so they must be placed in the assets folder and accessed via uri
-    const pageSource = PlatformIOS ? (this.props.source ? this.props.source:require('./editor.html')) : { uri: 'file:///android_asset/editor.html' };
+  render() {    
     return (
         <View style={{flex: 1}}>
           <WebView
@@ -263,7 +263,7 @@ export default class RichTextEditor extends Component {
               ref={this._setRef}
               onMessage={(message) => this.onBridgeMessage(message)}
               injectedJavaScript={injectScript}
-              source={pageSource}
+              source={{html:  this.editorHtml}}
               onLoad={() => this.init()}
           />
         </View>

@@ -5,6 +5,8 @@ res/generated/
 
 .npmignore
 
+src/editor.html
+
 
 #################
 # from .gitignore:

@@ -8,6 +8,9 @@
   "description": "React Native Wrapper for ZSSRichTextEditor",
   "main": "index.js",
   "license": "SEE LICENSE IN LICENSE",
+  "scripts": {
+    "build": "node scripts/build.js"
+  },
   "dependencies": {
     "react-native-webview": "13.12.5"
   },
