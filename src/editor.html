@@ -6362,6 +6362,17 @@
       zss_editor.setPlatform = function (platform) {
         zss_editor.platform = platform;
       };
+
+      zss_editor.disableContentEditing = function (html) {
+        $("#zss_editor_input_field_subject_field").attr("disabled", "true");
+        $("#zss_editor_content").attr("contenteditable", "false");
+      };
+
+      zss_editor.enableContentEditing = function (html) {
+        $("#zss_editor_input_field_subject_field").attr("disabled", "false");
+        $("#zss_editor_content").attr("contenteditable", "true");
+      };
+
       $(window).on("scroll", function () {
         var scrollHeight = $(document).height();
         var scrollPosition = $(window).height() + $(window).scrollTop();
@@ -6598,7 +6609,7 @@
         font-size: 16px;
         line-height: 19px;
         font-weight: bold;
-        color: #a8adb8;
+        color: #717684;
       }
 
       input.zss_editor_field_input {
@@ -6634,6 +6645,14 @@
         -webkit-user-select: none;
         padding-left: 10px;
         padding-right: 10px;
+      }
+
+      input[disabled] {
+        opacity: 1 !important; /* Ensure the element remains fully opaque */
+        color: #24272b !important; /* Override any grayed-out text color */
+        cursor: not-allowed; /* Reflect a non-clickable state with the cursor */
+        background-color: #fff; /* Optional: change the background if needed */
+        pointer-events: none; /* Prevent any interaction (clicks, focus, etc.) */
       }
     </style>
 

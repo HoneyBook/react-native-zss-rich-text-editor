@@ -653,4 +653,12 @@ export default class RichTextEditor extends Component {
   addSelectedTextChangeListener(listener) {
     this._selectedTextChangeListeners.push(listener);
   }
+
+  disableContentEditing() {
+    this._sendAction(actions.disableContentEditing);
+  }
+
+  enableContentEditing() {
+    this._sendAction(actions.enableContentEditing);
+  }
 }

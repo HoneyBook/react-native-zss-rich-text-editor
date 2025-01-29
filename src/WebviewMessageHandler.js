@@ -223,6 +223,12 @@ export const InjectedMessageHandler = `
         case '${actions.setPlatform}':
           zss_editor.setPlatform(action.data);
           break;
+        case '${actions.disableContentEditing}':
+          zss_editor.disableContentEditing();
+          break;
+        case '${actions.enableContentEditing}':
+          zss_editor.enableContentEditing();
+          break;
       }
     };
 
