@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import WebViewBridge from "react-native-webview-bridge";
 import { InjectedMessageHandler } from "./WebviewMessageHandler";
 import { actions, messages } from "./const";
 import { Dimensions, Keyboard, Platform, View } from "react-native";
+import WebView from "react-native-webview";
+import {getEditorHtml} from './editor'
 
 const injectScript = `
   (function () {
@@ -35,6 +36,7 @@ export default class RichTextEditor extends Component {
   constructor(props) {
     super(props);
     this._sendAction = this._sendAction.bind(this);
+    this._setRef = this._setRef.bind(this);
     this.registerToolbar = this.registerToolbar.bind(this);
     this.onBridgeMessage = this.onBridgeMessage.bind(this);
     this._onKeyboardWillShow = this._onKeyboardWillShow.bind(this);
@@ -51,6 +53,7 @@ export default class RichTextEditor extends Component {
     this.inputFieldResolves = {};
     this.inputFieldRejects = {};
     this.inputFieldTimers = {};
+    this.editorHtml = getEditorHtml()
   }
 
   componentDidMount() {
@@ -101,9 +104,9 @@ export default class RichTextEditor extends Component {
     // this.setEditorHeight(zibi);
   }
 
-  onBridgeMessage(str){
+  onBridgeMessage(event){
     try {
-      const message = JSON.parse(str);
+      const message = JSON.parse(event.nativeEvent.data);
 
       switch (message.type) {
         case messages.TITLE_HTML_RESPONSE:
@@ -192,7 +195,7 @@ export default class RichTextEditor extends Component {
           console.log('FROM ZSS', message.data);
           break;
         case messages.SCROLL:
-          this.webviewBridge.setNativeProps({contentOffset: {y: message.data}});
+          this.webviewRef.setNativeProps({contentOffset: {y: message.data}});
           break;
         case messages.TITLE_FOCUSED:
           this.titleFocusHandler && this.titleFocusHandler();
@@ -246,19 +249,21 @@ export default class RichTextEditor extends Component {
     }
   }
 
-  render() {
-    //in release build, external html files in Android can't be required, so they must be placed in the assets folder and accessed via uri
-    const pageSource = PlatformIOS ? (this.props.source ? this.props.source:require('./editor.html')) : { uri: 'file:///android_asset/editor.html' };
+  _setRef(ref){
+    this.webviewRef = ref;
+  }
+
+  render() {    
     return (
         <View style={{flex: 1}}>
-          <WebViewBridge
+          <WebView
               {...this.props}
               hideKeyboardAccessoryView={true}
               keyboardDisplayRequiresUserAction={false}
-              ref={(r) => {this.webviewBridge = r}}
-              onBridgeMessage={(message) => this.onBridgeMessage(message)}
+              ref={this._setRef}
+              onMessage={(message) => this.onBridgeMessage(message)}
               injectedJavaScript={injectScript}
-              source={pageSource}
+              source={{html:  this.editorHtml}}
               onLoad={() => this.init()}
           />
         </View>
@@ -283,7 +288,7 @@ export default class RichTextEditor extends Component {
 
     let jsonString = JSON.stringify({type: action, data});
     let test = this.btoa(unescape(encodeURIComponent(jsonString)));
-    this.webviewBridge.sendToBridge(test);
+    this.webviewRef.postMessage(test);
   }
 
   btoa(input= '') {
@@ -647,5 +652,13 @@ export default class RichTextEditor extends Component {
 
   addSelectedTextChangeListener(listener) {
     this._selectedTextChangeListeners.push(listener);
+  }
+
+  disableContentEditing() {
+    this._sendAction(actions.disableContentEditing);
+  }
+
+  enableContentEditing() {
+    this._sendAction(actions.enableContentEditing);
   }
 }

@@ -1,7 +1,7 @@
+import { Platform } from 'react-native';
 import {actions, messages} from './const';
 
 export const InjectedMessageHandler = `
-  if (WebViewBridge) {
     const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
     const hbAtob = function(input){
         let i = 0;
@@ -31,8 +31,8 @@ export const InjectedMessageHandler = `
         return output;
       };
 
-    WebViewBridge.onMessage = function (message) {
-      const action = JSON.parse(decodeURIComponent(escape(hbAtob(message))));
+    const onMessage = function (messageEvent) {
+      const action = JSON.parse(decodeURIComponent(escape(hbAtob(messageEvent.data))));
 
       switch(action.type) {
         case '${actions.enableOnChange}':
@@ -147,23 +147,23 @@ export const InjectedMessageHandler = `
           zss_editor.setContentPlaceholder(action.data);
           break;
         case '${actions.addRecipient}':
-          WebViewBridge.send(JSON.stringify({type: '${messages.ADD_RECIPIENT}'}));
+          window.ReactNativeWebView.postMessage(JSON.stringify({type: '${messages.ADD_RECIPIENT}'}));
           break;
         case '${actions.getTitleHtml}':
           var html = zss_editor.getTitleHTML();
-          WebViewBridge.send(JSON.stringify({type: '${messages.TITLE_HTML_RESPONSE}', data: html}));
+          window.ReactNativeWebView.postMessage(JSON.stringify({type: '${messages.TITLE_HTML_RESPONSE}', data: html}));
           break;
         case '${actions.getTitleText}':
           var html = zss_editor.getTitleText();
-          WebViewBridge.send(JSON.stringify({type: '${messages.TITLE_TEXT_RESPONSE}', data: html}));
+          window.ReactNativeWebView.postMessage(JSON.stringify({type: '${messages.TITLE_TEXT_RESPONSE}', data: html}));
           break;
         case '${actions.getContentHtml}':
           var html = zss_editor.getContentHTML();
-          WebViewBridge.send(JSON.stringify({type: '${messages.CONTENT_HTML_RESPONSE}', data: html}));
+          window.ReactNativeWebView.postMessage(JSON.stringify({type: '${messages.CONTENT_HTML_RESPONSE}', data: html}));
           break;
         case '${actions.getInputFieldText}':
           var text = zss_editor.getInputFieldText(action.data);
-          WebViewBridge.send(JSON.stringify({type: '${messages.INPUT_FIELD_TEXT_RESPONSE}', data: text, key: action.data}));
+          window.ReactNativeWebView.postMessage(JSON.stringify({type: '${messages.INPUT_FIELD_TEXT_RESPONSE}', data: text, key: action.data}));
           break;
         case '${actions.setScheduleSendDate}':
           var data = zss_editor.setScheduleSendDate(action.data);
@@ -188,7 +188,7 @@ export const InjectedMessageHandler = `
           break; 
         case '${actions.getSelectedText}':
           var selectedText = getSelection().toString();
-          WebViewBridge.send(JSON.stringify({type: '${messages.SELECTED_TEXT_RESPONSE}', data: selectedText}));
+          window.ReactNativeWebView.postMessage(JSON.stringify({type: '${messages.SELECTED_TEXT_RESPONSE}', data: selectedText}));
           break;
         case '${actions.focusContent}':
           zss_editor.focusContent();
@@ -223,7 +223,14 @@ export const InjectedMessageHandler = `
         case '${actions.setPlatform}':
           zss_editor.setPlatform(action.data);
           break;
+        case '${actions.disableContentEditing}':
+          zss_editor.disableContentEditing();
+          break;
+        case '${actions.enableContentEditing}':
+          zss_editor.enableContentEditing();
+          break;
       }
     };
-  }
+
+    ${Platform.OS === "ios"? 'window': 'document'}.addEventListener("message", onMessage);
 `;

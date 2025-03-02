@@ -8,17 +8,11 @@ A fully functional Rich Text Editor for both Android and iOS, based off the [ZSS
 npm i --save react-native-zss-rich-text-editor
 ```
 
-On Android, add the following to the end of your `android/app/build.gradle`
-
-```groovy
-project.afterEvaluate {
-    apply from: '../../node_modules/react-native-zss-rich-text-editor/htmlCopy.gradle';
-    copyEditorHtmlToAppAssets(file('../../node_modules/react-native-zss-rich-text-editor'))
-}
-```
-
 Also, follow instructions [here](https://github.com/alinz/react-native-webview-bridge) to add the native `react-native-webview-bridge-updated` dependency.
 
+## Contribution
+
+If you edit the src/editor.html file, you have to run the `yarn build` script to regenerate the src/editor.js file
 
 ## Usage
 
