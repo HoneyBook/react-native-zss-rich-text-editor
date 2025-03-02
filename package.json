@@ -11,11 +11,12 @@
   "scripts": {
     "build": "node scripts/build.js"
   },
-  "dependencies": {
+  "devDependencies": {
     "react-native-webview": "13.12.5"
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "0.76.0"
+    "react-native": "0.76.0",
+    "react-native-webview": ">=13.0.0"
   }
 }
