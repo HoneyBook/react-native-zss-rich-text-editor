@@ -243,6 +243,10 @@ export default class RichTextEditor extends Component {
           this.props.openScheduleEmail && this.props.openScheduleEmail();
           break;
         }
+
+        case messages.GET_STARTED_PRESSED: {
+          this.props.onGetStartedPressed();
+        }
       }
     } catch(e) {
       //alert('NON JSON MESSAGE');
@@ -661,4 +665,5 @@ export default class RichTextEditor extends Component {
   enableContentEditing() {
     this._sendAction(actions.enableContentEditing);
   }
+
 }
