@@ -5445,21 +5445,23 @@
         // Make sure that when we tap anywhere in the document we focus on the editor
         $(window).on("touchmove", function (e) {
           zss_editor.isDragging = true;
-          zss_editor.updateScrollOffset = true;
+          // zss_editor.updateScrollOffset = true; // Disabled to prevent scroll clamping during gesture
           zss_editor.setScrollPosition();
-          zss_editor.enabledEditingItems(e);
+          // zss_editor.enabledEditingItems(e); // Avoid heavy work during touchmove to reduce jank
         });
         $(window).on("touchstart", function (e) {
           zss_editor.isDragging = false;
         });
         $(window).on("scroll", function (e) {
-          if (zss_editor.platform === "ios") {
-            zss_editor.updateOffset();
-          }
+          // Disabled iOS scroll clamping to avoid fighting user scroll and causing jitter
+          // if (zss_editor.platform === "ios") {
+          //   zss_editor.updateOffset();
+          // }
         });
 
-        setupTouchEndFocus("zss_editor_title");
-        setupTouchEndFocus("zss_editor_content");
+        // Disabled global touchend focus to avoid unexpected scroll jumps with keyboard open
+        // setupTouchEndFocus("zss_editor_title");
+        // setupTouchEndFocus("zss_editor_content");
 
         setCurrentEditingLinkOnTouch();
         preventLinkFollowingOnTouch();
@@ -5539,10 +5541,18 @@
         window.ReactNativeWebView.postMessage(JSON.stringify({ type: "LOG", data: msg }));
       };
 
-      zss_editor.setScrollPosition = function () {
-        var position = window.pageYOffset;
-        window.ReactNativeWebView.postMessage(JSON.stringify({ type: "SCROLL", data: position }));
-      };
+      // Throttled scroll position posting to avoid saturating the RN bridge
+      ;(function(){
+        var _lastPost = 0;
+        var _minInterval = 100; // ms
+        zss_editor.setScrollPosition = function () {
+          var now = Date.now();
+          if (now - _lastPost < _minInterval) return;
+          _lastPost = now;
+          var position = window.pageYOffset;
+          window.ReactNativeWebView.postMessage(JSON.stringify({ type: "SCROLL", data: position }));
+        };
+      })();
 
       function setPlaceholder(editorId, placeholder) {
         var editor = $("#" + editorId);
@@ -6373,16 +6383,24 @@
         $("#zss_editor_content").attr("contenteditable", "true");
       };
 
-      $(window).on("scroll", function () {
-        var scrollHeight = $(document).height();
-        var scrollPosition = $(window).height() + $(window).scrollTop();
-        if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ type: "BOTTOM_REACHED" }));
-        }
-        if (scrollPosition === 0) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({ type: "TOP_REACHED" }));
-        }
-      });
+      // Throttled top/bottom detection to reduce work during fast scroll
+      ;(function(){
+        var _lastTBPost = 0;
+        var _tbInterval = 150; // ms
+        $(window).on("scroll", function () {
+          var now = Date.now();
+          if (now - _lastTBPost < _tbInterval) return;
+          _lastTBPost = now;
+          var scrollHeight = $(document).height();
+          var scrollPosition = $(window).height() + $(window).scrollTop();
+          if ((scrollHeight - scrollPosition) / scrollHeight === 0) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "BOTTOM_REACHED" }));
+          }
+          if (scrollPosition === 0) {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ type: "TOP_REACHED" }));
+          }
+        });
+      })();
       //end
     </script>
 
@@ -6446,6 +6464,7 @@
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
         height: 100%;
+        overscroll-behavior: contain;
       }
 
       img.zs_active {
@@ -6468,8 +6487,9 @@
         color: #000;
         /*width: 100%;*/
         height: 100%;
-        -webkit-overflow-scrolling: touch;
-        overflow: auto;
+        /* Disable inner momentum scroll to avoid competing scrollers */
+        /* -webkit-overflow-scrolling: touch; */
+        /* overflow: auto; */
         caret-color: #24272b;
       }
 
